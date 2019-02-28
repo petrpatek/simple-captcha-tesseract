@@ -4,6 +4,20 @@ const fs = require('fs');
 const request = require('request-promise');
 const path = require('path');
 const Jimp = require('jimp');
+
+async function resolveInBatches(promiseArray, batchLength = 3) {
+    const promises = [];
+    for (const promise of promiseArray) {
+        if (typeof promise === 'function') {
+            promises.push(promise());
+        } else {
+            promises.push(promise);
+        }
+        if (promises.length % batchLength === 0) await Promise.all(promises);
+    }
+    return Promise.all(promises);
+}
+
 class Anticaptcha {
     constructor(clientKey) {
         this.clientKey = clientKey;
@@ -93,7 +107,7 @@ const resizeImage = async (imagePng, i) => {
 Apify.main(async () => {
     // Get input of your act
     let input = await Apify.getValue('INPUT');
-    const store = await Apify.openKeyValueStore("TESSERACT")
+    const store = await Apify.openKeyValueStore('TESSERACT');
     // to solve the start from webhook and the console run debug
     if (input.data) {
         input = JSON.parse(input.data);
@@ -102,22 +116,18 @@ Apify.main(async () => {
     }
 
     console.log('Start');
-    const resultImages = [];
+    let resultImages = [];
     const resultTexts = [];
 
     // when i work with array
-    while (input.length) {
-        console.log(`Getting image....length:${input.length}`);
-        const imageUrl = input.pop();
-        let imageContent;
-        if (imageUrl.match(/\.gif$/i)) {
-            const image1 = await convertUrlGifToPng(imageUrl);
-            imageContent = await resizeImage(image1, input.length);
-            // console.log("beore save ve have "  + imageContent)
-        } else {
-            imageContent = await request({ url: imageUrl, encoding: null });
-        }
-        resultImages.push(imageContent);
+    if (input.length) {
+        resultImages = await resolveInBatches(input.map(async (item) => {
+            if (item.match(/\.gif$/i)) {
+                const image1 = await convertUrlGifToPng(item);
+                return () => resizeImage(image1, input.length);
+            }
+            return () => request({ url: item, encoding: null });
+        }), 5);
     }
 
 
