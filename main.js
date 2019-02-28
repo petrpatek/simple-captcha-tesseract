@@ -18,65 +18,6 @@ async function resolveInBatches(promiseArray, batchLength = 3) {
     return Promise.all(promises);
 }
 
-class Anticaptcha {
-    constructor(clientKey) {
-        this.clientKey = clientKey;
-        // this.uri = 'http://api.anti-captcha.com';
-    }
-
-    async createTask(task) {
-        const opt = {
-            method: 'POST',
-            uri: 'http://api.anti-captcha.com/createTask',
-            body: {
-                task,
-                clientKey: this.clientKey,
-            },
-            json: true,
-        };
-        const response = await request(opt);
-        return response.taskId;
-    }
-
-    async getTaskResult(taskId) {
-        const opt = {
-            method: 'POST',
-            uri: 'http://api.anti-captcha.com/createTask',
-            body: {
-                taskId,
-                clientKey: this.clientKey,
-            },
-            json: true,
-        };
-        return await request(opt);
-    }
-
-    async waitForTaskResult(taskId, timeout) {
-        return new Promise((resolve, reject) => {
-            const startedAt = new Date();
-            const waitLoop = () => {
-                if ((new Date() - startedAt) > timeout) {
-                    reject(new Error('Timeout before condition pass'));
-                }
-                this.getTaskResult(taskId)
-                    .then((response) => {
-                        if (response.errorId !== 0) {
-                            reject(new Error(response.errorCode, response.errorDescription));
-                        } else {
-                            console.log(response);
-                            if (response.status === 'ready') {
-                                resolve(response);
-                            } else {
-                                setTimeout(waitLoop, 1000);
-                            }
-                        }
-                    })
-                    .catch(e => reject(e));
-            };
-            waitLoop();
-        });
-    }
-}
 const convertUrlGifToPng = async (imageUrl) => {
     console.log('Image is GIF use browser to convert to png.');
     const browser = await Apify.browse(imageUrl);
@@ -87,7 +28,7 @@ const convertUrlGifToPng = async (imageUrl) => {
 };
 
 const resizeImage = async (imagePng, i) => {
-    return await new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         Jimp.read(imagePng, (err, image) => {
             image
                 .autocrop([2, true])
@@ -117,7 +58,7 @@ Apify.main(async () => {
 
     console.log('Start');
     let resultImages = [];
-    const resultTexts = [];
+    let resultTexts = [];
 
     // when i work with array
     if (input.length) {
@@ -145,30 +86,12 @@ Apify.main(async () => {
     }
     fs.writeFileSync(require('path').resolve(__dirname, 'eng.traineddata'), testData);
     if (resultImages.length !== 0) {
-        while (resultImages.length) {
-            const imageNumber = resultImages.length;
-            console.log(`Solving image with Tesseract....length:${imageNumber}`);
-            const recognizeImage = resultImages.pop();
-            console.log(recognizeImage);
-            const result = await Tesseract.recognize(recognizeImage, { lang: 'eng', classify_bln_numeric_mode: 1, tessedit_char_whitelist: '0123456789' }).progress(message => console.log(message));
-            console.log('Result text:', result.text);
-            if (result.text) {
-                resultTexts.push(result.text);
-            }
-            /* else {
-                console.log("Solving image with Anticaptcha....length:" + imageNumber)
-                const anticaptcha = new Anticaptcha(process.env.ANTI_CAPTCHA_KEY);
-                let task = {
-                    "type": "ImageToTextTask",
-                    "body": recognizeImage.toString('base64'),
-                }
-                const taskId = await anticaptcha.createTask(task);
-                result = await anticaptcha.waitForTaskResult(taskId, 600000);
-                console.log('Result text:', result.solution.text);
-                resultTexts.push(result.solution.text);
-            }
-            */
-        }
+        const results = await resolveInBatches(resultImages.map((image, index) => {
+            console.log(`Solving image with Tesseract....length:${index}`);
+            console.log(image);
+            return () => Tesseract.recognize(image, { lang: 'eng', classify_bln_numeric_mode: 1, tessedit_char_whitelist: '0123456789' }).progress(message => console.log(message));
+        }), 7);
+        resultTexts = results.map(result => result.text);
     }
     console.log('resultTexts:', resultTexts);
     await Apify.setValue('OUTPUT', resultTexts);
