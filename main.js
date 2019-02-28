@@ -89,9 +89,13 @@ Apify.main(async () => {
         const results = await resolveInBatches(resultImages.map((image, index) => {
             console.log(`Solving image with Tesseract....length:${index}`);
             console.log(image);
-            return () => Tesseract.recognize(image, { lang: 'eng', classify_bln_numeric_mode: 1, tessedit_char_whitelist: '0123456789' }).progress(message => console.log(message));
+            return () => Tesseract.recognize(image, { lang: 'eng', classify_bln_numeric_mode: 1, tessedit_char_whitelist: '0123456789' });
         }), 7);
-        resultTexts = results.map(result => result.text);
+        resultTexts = results.map((result) => {
+            console.log(result);
+            return result.text;
+        });
+        console.log(resultTexts, 'RES');
     }
     console.log('resultTexts:', resultTexts);
     await Apify.setValue('OUTPUT', resultTexts);
