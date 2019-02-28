@@ -4,7 +4,6 @@ const fs = require('fs');
 const request = require('request-promise');
 const path = require('path');
 const Jimp = require('jimp');
-
 class Anticaptcha {
     constructor(clientKey) {
         this.clientKey = clientKey;
@@ -94,6 +93,7 @@ const resizeImage = async (imagePng, i) => {
 Apify.main(async () => {
     // Get input of your act
     let input = await Apify.getValue('INPUT');
+    const store = await Apify.openKeyValueStore("TESSERACT")
     // to solve the start from webhook and the console run debug
     if (input.data) {
         input = JSON.parse(input.data);
@@ -124,13 +124,13 @@ Apify.main(async () => {
     // Save test data to local machine because Tesseract has stupid issue https://github.com/naptha/tesseract.js/issues/130
     // https://github.com/arturaugusto/display_ocr/blob/master/letsgodigital/letsgodigital.traineddata
     // const numbers = await request({ url: 'https://github.com/arturaugusto/display_ocr/blob/master/letsgodigital/letsgodigital.traineddata', encoding: null });
-    let testData = await Apify.getValue('TEST_DATA_TESSERACT');
+    let testData = await store.getValue('TEST_DATA_TESSERACT');
     if (!testData) {
         testData = await request({
             url: 'https://raw.githubusercontent.com/tesseract-ocr/tessdata/master/eng.traineddata',
             encoding: null,
         });
-        await Apify.setValue('TEST_DATA_TESSERACT', testData, { contentType: 'text/plain' });
+        await store.setValue('TEST_DATA_TESSERACT', testData, { contentType: 'text/plain' });
     }
     fs.writeFileSync(require('path').resolve(__dirname, 'eng.traineddata'), testData);
     // fs.writeFileSync(require('path').resolve(__dirname, 'digital.traineddata'), numbers)
