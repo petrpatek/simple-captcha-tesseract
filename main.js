@@ -128,6 +128,7 @@ Apify.main(async () => {
             }
             return () => request({ url: item, encoding: null });
         }), 5);
+        console.log(resultImages, 'IMAGES');
     }
 
 
@@ -140,11 +141,9 @@ Apify.main(async () => {
             url: 'https://raw.githubusercontent.com/tesseract-ocr/tessdata/master/eng.traineddata',
             encoding: null,
         });
-        await store.setValue('TEST_DATA_TESSERACT', testData, { contentType: 'text/plain' });
+        await store.setValue('TEST_DATA_TESSERACT', testData);
     }
     fs.writeFileSync(require('path').resolve(__dirname, 'eng.traineddata'), testData);
-    // fs.writeFileSync(require('path').resolve(__dirname, 'digital.traineddata'), numbers)
-
     if (resultImages.length !== 0) {
         while (resultImages.length) {
             const imageNumber = resultImages.length;
