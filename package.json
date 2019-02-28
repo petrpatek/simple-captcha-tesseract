@@ -4,7 +4,9 @@
 	"description": "This is a boilerplate of an Apify actor.",
 	"main": "main.js",
 	"dependencies": {
+		"@petrpatek/eslint-config-apify": "^1.0.0",
 		"apify": "^0.11.0",
+		"eslint": "^5.14.1",
 		"jimp": "^0.6.0",
 		"request-promise": "^4.2.4",
 		"tesseract.js": "^1.0.14"
