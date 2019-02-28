@@ -141,7 +141,7 @@ Apify.main(async () => {
             url: 'https://raw.githubusercontent.com/tesseract-ocr/tessdata/master/eng.traineddata',
             encoding: null,
         });
-        await store.setValue('TEST_DATA_TESSERACT', testData);
+        await store.setValue('TEST_DATA_TESSERACT', testData, { contentType: 'application/octet-stream' });
     }
     fs.writeFileSync(require('path').resolve(__dirname, 'eng.traineddata'), testData);
     if (resultImages.length !== 0) {
