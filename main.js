@@ -124,9 +124,9 @@ Apify.main(async () => {
         resultImages = await resolveInBatches(input.map(async (item) => {
             if (item.match(/\.gif$/i)) {
                 const image1 = await convertUrlGifToPng(item);
-                return () => resizeImage(image1, input.length);
+                return resizeImage(image1, input.length);
             }
-            return () => request({ url: item, encoding: null });
+            return request({ url: item, encoding: null });
         }), 5);
         console.log(resultImages, 'IMAGES');
     }
