@@ -1,7 +1,11 @@
 const Tesseract = require('tesseract.js');
+const Apify = require('apify');
+
+const { utils: { log } } = Apify;
 
 
-function createJobPromise(image) {
+function createJobPromise(image, index) {
+    log.info(`Creating job info for image number ${index}`);
     return new Promise((resolve, reject) => {
         Tesseract
             .recognize(image, { lang: 'eng', classify_bln_numeric_mode: 1, tessedit_char_whitelist: '0123456789' })

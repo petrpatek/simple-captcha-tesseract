@@ -1,16 +1,18 @@
 const sharp = require('sharp');
 const request = require('request-promise');
+const Apify = require('apify');
 const { resolveInBatches } = require('../tools');
 
+const { utils: { log } } = Apify;
+
 const convertUrlGifToPng = async (imageUrl) => {
-    console.log('Image is GIF use browser to convert to png.');
+    log.info(`Downloading and converting: ${imageUrl} to gif`);
     const image = await request({ url: imageUrl, encoding: null });
-    // console.log(image, 'IMAGE');
     return sharp(image)
         .resize(200)
         .png()
         .toBuffer()
-        .catch(err => console.error(`Could not process image: ${imageUrl}`, err));
+        .catch(err => log.error(`Could not process image: ${imageUrl}`, err));
 };
 
 const processImages = async (input) => {

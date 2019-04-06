@@ -17,7 +17,6 @@ Apify.main(async () => {
     let resultImages = [];
     let resultTexts = [];
 
-    // when i work with array
     if (input.length) {
         resultImages = await processImages(input);
         log.info(`Going to process ${resultImages.length} images`);
@@ -27,6 +26,7 @@ Apify.main(async () => {
         resultTexts = await resolveImagesConcurrently(resultImages, 10);
     }
     log.info('Finished');
+
     console.timeEnd('process');
 
     await Apify.setValue('OUTPUT', resultTexts);
