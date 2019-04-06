@@ -4,6 +4,8 @@ const fs = require('fs');
 const request = require('request-promise');
 const { processImages } = require('./libs/imageProcessing');
 
+const { utils: { log } } = Apify;
+
 Apify.main(async () => {
     // Get input of your act
     let input = await Apify.getValue('INPUT');
@@ -11,18 +13,16 @@ Apify.main(async () => {
     // to solve the start from webhook and the console run debug
     if (input.data) {
         input = JSON.parse(input.data);
-    } else {
-        input = input;
     }
 
-    console.log('Start');
+    log.info('Starting');
     let resultImages = [];
     let resultTexts = [];
 
     // when i work with array
     if (input.length) {
         resultImages = await processImages(input);
-        console.log(resultImages, 'IMAGES');
+        log.info(`Going to process ${resultImages.length} images`);
     }
 
 
