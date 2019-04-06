@@ -16,6 +16,7 @@ Apify.main(async () => {
     }
 
     log.info('Starting');
+    console.time('process');
     let resultImages = [];
     let resultTexts = [];
 
@@ -26,13 +27,10 @@ Apify.main(async () => {
     }
 
     if (resultImages.length !== 0) {
-        const results = await resolveImagesConcurrently(resultImages, 10);
-        resultTexts = results.map((result) => {
-            console.log(result);
-            return result.text;
-        });
-        console.log(resultTexts, 'RES');
+        resultTexts = await resolveImagesConcurrently(resultImages, 10);
     }
-    console.log('resultTexts:', resultTexts);
+    log.info('Finished');
+    console.timeEnd('process');
+
     await Apify.setValue('OUTPUT', resultTexts);
 });

@@ -1,14 +1,11 @@
 const Tesseract = require('tesseract.js');
-const Apify = require('apify');
 
-const { utils: { log } } = Apify;
 
-function createJobPromise(image, index) {
+function createJobPromise(image) {
     return new Promise((resolve, reject) => {
         Tesseract
             .recognize(image, { lang: 'eng', classify_bln_numeric_mode: 1, tessedit_char_whitelist: '0123456789' })
-            .progress(msg => log.info(`Image ${index} progress - ${msg}`))
-            .then(resolve)
+            .then(result => resolve(result.text))
             .catch(reject);
     });
 }
