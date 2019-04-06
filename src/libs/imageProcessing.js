@@ -1,5 +1,6 @@
 const Jimp = require('jimp');
 const Apify = require('apify');
+const { resolveInBatches } = require('../tools');
 
 const convertUrlGifToPng = async (imageUrl) => {
     console.log('Image is GIF use browser to convert to png.');
