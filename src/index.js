@@ -28,7 +28,8 @@ Apify.main(async () => {
 
     // Save test data to local machine because Tesseract has stupid issue https://github.com/naptha/tesseract.js/issues/130
     // https://github.com/arturaugusto/display_ocr/blob/master/letsgodigital/letsgodigital.traineddata
-    // const numbers = await request({ url: 'https://github.com/arturaugusto/display_ocr/blob/master/letsgodigital/letsgodigital.traineddata', encoding: null });
+    // const numbers = await request({ url:
+    // 'https://github.com/arturaugusto/display_ocr/blob/master/letsgodigital/letsgodigital.traineddata', encoding: null });
     let testData = await store.getValue('TEST_DATA_TESSERACT');
     if (!testData) {
         log.info('Downloading training data');

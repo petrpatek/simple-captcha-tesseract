@@ -11,7 +11,7 @@ const convertUrlGifToPng = async (imageUrl) => {
     return Buffer.from(screen, 'base64');
 };
 
-const resizeImage = async (imagePng, i) => {
+const resizeImage = async (imagePng) => {
     return new Promise((resolve, reject) => {
         Jimp.read(imagePng, (err, image) => {
             image
