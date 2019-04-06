@@ -1,4 +1,5 @@
 const Tesseract = require('tesseract.js');
+const Apify = require('apify');
 
 const { utils: { log } } = Apify;
 
