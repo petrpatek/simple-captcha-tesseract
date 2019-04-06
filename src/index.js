@@ -1,7 +1,4 @@
 const Apify = require('apify');
-const Tesseract = require('tesseract.js');
-const fs = require('fs');
-const request = require('request-promise');
 const { processImages } = require('./libs/imageProcessing');
 const { resolveImagesConcurrently } = require('./libs/tessaract');
 
