@@ -36,7 +36,7 @@ const processImages = async (input) => {
             return resizeImage(image1, input.length);
         }
         return request({ url: item, encoding: null });
-    }), 5);
+    }), 20);
 };
 
 module.exports = {
