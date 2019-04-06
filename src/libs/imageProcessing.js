@@ -10,7 +10,6 @@ const convertUrlGifToPng = async (imageUrl) => {
         .resize(200)
         .png()
         .toBuffer()
-        .grayscale()
         .catch(err => console.error(`Could not process image: ${imageUrl}`, err));
 };
 
