@@ -1,4 +1,4 @@
-FROM apify/actor-node-chrome
+FROM apify/actor-node-basic
 
 # Copy source code
 COPY . ./
@@ -11,7 +11,9 @@ RUN npm --quiet set progress=false \
  && echo "Node.js version:" \
  && node --version \
  && echo "NPM version:" \
- && npm --version
+ && npm --version \
+ && echo "Running download task" \
+ && npm run downloadTestData
 
 # By default, the apify/actor-node-basic image uses "npm start" to run the code.
 # You can override this behavior using the CMD instruction here:
