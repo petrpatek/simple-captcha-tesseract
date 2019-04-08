@@ -1,7 +1,7 @@
 # Tesseract OCR - simple captcha solver
 Handy simple captcha solving using Tesseract OCR.
 
-##Input
+## Input
 Actor accepts an array of urls strings. Supported image formats are `GIF`, `PNG`, `JPG`.
 
 ___Example Input:___
@@ -16,7 +16,7 @@ ___Example Input:___
 ]
 ```
 
-##Output
+## Output
 Output is an array with corresponding numbers from the simple captcha.
 
 ___Example Input:___
